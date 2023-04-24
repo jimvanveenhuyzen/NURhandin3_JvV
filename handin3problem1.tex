@@ -1,6 +1,6 @@
 \section*{Code of Problem 1}
 
-The code is included below. Like in the previous hand-in, I use code between sub-questions so I found that having one big .py file per problem is the most efficient.
+The code is included below. Like in the previous hand-in, I use code between sub-questions so I found that having one big .py file per problem is the most efficient. I'd like to mention that I am fundamentally misunderstanding something about this assignment, as you will notice from my wrong results. 
 
 \lstinputlisting{NURhandin3.py}
 
@@ -27,19 +27,50 @@ Unfortunately, there seems to be a severe mistake somewhere in the computed in t
 \begin{table}[!h]
 \begin{tabular}{llllll}
 \textbf{} & \textbf{$N_{sat}$} & \textbf{a} & \textbf{b} & \textbf{c} & \textbf{$\chi^{2}$} \\
-\textbf{$m_{11}$} &    0.014       &           &           &           &           \\
-\textbf{$m_{12}$} &     0.25      &           &           &           &           \\
-\textbf{$m_{13}$} &     4.4      &           &           &           &           \\
-\textbf{$m_{14}$} &      29.1     &           &           &           &           \\
-\textbf{$m_{15}$} &       329.5    &           &           &           &          
+\textbf{$m_{11}$} &    0.014       &     2.44      &      0.21     &      1.10     &     $8.8 \cdot 10^{12}$      \\
+\textbf{$m_{12}$} &     0.25      &      2.44      &      0.21     &      1.10    &     $9.8 \cdot 10^{15}$      \\
+\textbf{$m_{13}$} &     4.4      &     2.44      &      0.21     &      1.10    &     $1.0 \cdot 10^{17}$      \\
+\textbf{$m_{14}$} &      29.1     &      2.44      &      0.21     &      1.10     &     $2.5 \cdot 10^{16}$      \\
+\textbf{$m_{15}$} &       329.5    &      2.44      &      0.21     &      1.10    &         $3.1 \cdot 10^{16}$ 
 \end{tabular}
 \end{table}
 
 We also compare the binned data together with the best-fit profiles in a log-log plot. These are plotted below:
 
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.7\linewidth]{./1b_figure1.png}
+  \caption{In this log-log plot we plot the modelled number of galaxies N_i at the radii of the data file m11 against the data histogram of these same radii.}
+\end{figure}
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.7\linewidth]{./1b_figure2.png}
+  \caption{In this log-log plot we plot the modelled number of galaxies N_i at the radii of the data file m12 against the data histogram of these same radii.}
+\end{figure}
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.7\linewidth]{./1b_figure3.png}
+  \caption{In this log-log plot we plot the modelled number of galaxies N_i at the radii of the data file m13 against the data histogram of these same radii.}
+\end{figure}
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.7\linewidth]{./1b_figure4.png}
+  \caption{In this log-log plot we plot the modelled number of galaxies N_i at the radii of the data file m14 against the data histogram of these same radii.}
+\end{figure}
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.7\linewidth]{./1b_figure5.png}
+  \caption{In this log-log plot we plot the modelled number of galaxies N_i at the radii of the data file m15 against the data histogram of these same radii.}
+\end{figure}
+
+
 The output of the code is given by:
 
-%\lstinputlisting{NURhandin3problem1b.txt}
+\lstinputlisting{NURhandin3problem1b.txt}
 
 \section*{Problem 1c}
 
@@ -55,4 +86,41 @@ Here, $y_i$ are the N independent data points and $\mu(x_i | \vec{p})$ = $\bar{N
 	- \ln(\textbf{L}(\vec{p})) = - \sum_{i=0}^{N-1} \Big( y_i \ln (\mu(x_i | \vec{p})) - \mu(x_i | \vec{p}) - \ln(y_i!) \Big)
 \end{equation}	
 
-We incorporate the above equation as a function in python. 
+We incorporate the above equation as a function in python. I again intend to minimize this function using the downhill simplex algorithm used in 1b. This however did not work at all for me, I spend many hour rigorously trying to debug, but to no avail. See the code and included comments for more details. I unfortunately have no results to present here. 
+
+\section*{Problem 1d}
+
+Finally, we now perform a G-test. The formula to compute the value $G$ is given by:
+
+\begin{equation}
+	G = 2 \sum_{i} O_i \ln\Big( \frac{O_i}{E_i}\Big)
+\end{equation}
+
+Here, we use the given data for the observed values $O_i$ and the fitted values for $E_i$. This results in the following G-values for the $\chi^2$ distribution:
+I don't have any G-values for part (c), as my MLE fitting is not running. Next, we slides instruct us to use the G-values as $x$ values, in this case the radii, to compute the CDF P(x,k) from which the significance value Q can be found. My G values are very high however, so the incomplete gamma function is equal to 1 using x = G, so we get the same Q for every G-value, which I assume is not right. The formula I implemented and used is:
+
+\begin{equation}
+	Q = 1 - P(x,k) = 1 - \frac{\gamma (k/2 , x/2)}{\Gamma (k/2)}
+\end{equation}
+
+The number of degrees of freedom depends on the number of bins you used to bin the radii. I used 10 (logaritmic bins), so combining this with having three parameters that are fitted, we are left with 10 - 3 = 7 degrees of freedom. My Q-values are identical and equal to ..., so unfortunately I cannot conclude anything meaningful from this. 
+
+The output is:\\
+
+\lstinputlisting{NURhandin3problem1d.txt}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
