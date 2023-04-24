@@ -40,35 +40,35 @@ We also compare the binned data together with the best-fit profiles in a log-log
 \begin{figure}[h!]
   \centering
   \includegraphics[width=0.7\linewidth]{./1b_figure1.png}
-  \caption{In this log-log plot we plot the modelled number of galaxies N_i at the radii of the data file m11 against the data histogram of these same radii.}
+  \caption{In this log-log plot we plot the modelled number of galaxies $N_i$ at the radii of the data file m11 against the data histogram of these same radii.}
 \end{figure}
 
 \begin{figure}[h!]
   \centering
   \includegraphics[width=0.7\linewidth]{./1b_figure2.png}
-  \caption{In this log-log plot we plot the modelled number of galaxies N_i at the radii of the data file m12 against the data histogram of these same radii.}
+  \caption{In this log-log plot we plot the modelled number of galaxies $N_i$ at the radii of the data file m12 against the data histogram of these same radii.}
 \end{figure}
 
 \begin{figure}[h!]
   \centering
   \includegraphics[width=0.7\linewidth]{./1b_figure3.png}
-  \caption{In this log-log plot we plot the modelled number of galaxies N_i at the radii of the data file m13 against the data histogram of these same radii.}
+  \caption{In this log-log plot we plot the modelled number of galaxies $N_i$ at the radii of the data file m13 against the data histogram of these same radii.}
 \end{figure}
 
 \begin{figure}[h!]
   \centering
   \includegraphics[width=0.7\linewidth]{./1b_figure4.png}
-  \caption{In this log-log plot we plot the modelled number of galaxies N_i at the radii of the data file m14 against the data histogram of these same radii.}
+  \caption{In this log-log plot we plot the modelled number of galaxies $N_i$ at the radii of the data file m14 against the data histogram of these same radii.}
 \end{figure}
 
 \begin{figure}[h!]
   \centering
   \includegraphics[width=0.7\linewidth]{./1b_figure5.png}
-  \caption{In this log-log plot we plot the modelled number of galaxies N_i at the radii of the data file m15 against the data histogram of these same radii.}
+  \caption{In this log-log plot we plot the modelled number of galaxies $N_i$ at the radii of the data file m15 against the data histogram of these same radii.}
 \end{figure}
 
 
-The output of the code is given by:
+The output of the code is given by the following. Look for the 'output of m1x' lines, they contain the outputted values in the order of the problem: Nsat, a,b,c, $\chi^2$.
 
 \lstinputlisting{NURhandin3problem1b.txt}
 
@@ -103,9 +103,9 @@ I don't have any G-values for part (c), as my MLE fitting is not running. Next, 
 	Q = 1 - P(x,k) = 1 - \frac{\gamma (k/2 , x/2)}{\Gamma (k/2)}
 \end{equation}
 
-The number of degrees of freedom depends on the number of bins you used to bin the radii. I used 10 (logaritmic bins), so combining this with having three parameters that are fitted, we are left with 10 - 3 = 7 degrees of freedom. My Q-values are identical and equal to ..., so unfortunately I cannot conclude anything meaningful from this. 
+The number of degrees of freedom depends on the number of bins you used to bin the radii. I used 10 (logaritmic bins), so combining this with having three parameters that are fitted, we are left with 10 - 3 = 7 degrees of freedom. My Q-values are identical and equal to 0.6991, so unfortunately I cannot conclude anything meaningful from this. 
 
-The output is:\\
+The output is as follows, where the order is G-values m11 to m15, and below that line the Q-values m11 to m15 :\\
 
 \lstinputlisting{NURhandin3problem1d.txt}
 
