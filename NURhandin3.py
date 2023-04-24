@@ -72,6 +72,10 @@ x_maximum = golden_ratio(n_integrand,0.01,5,1e-3)
 N_maximum = n_integrand(x_maximum)
 print('Problem 1a:')
 print(f'The maximum value of N, {N_maximum}, is found at x = {x_maximum}!')
+
+output = x_maximum,N_maximum
+np.savetxt('NURhandin3problem1a.txt',output,fmt='%f')
+
 print('Problem 1b:')
 
 #Problem 1b
@@ -134,11 +138,11 @@ To minimize a function, we use the N-dimensional downhill simplex algorithm
 
 def downhill_simplex(f,err,*args): #N-dimensional downhill simplex method   
     f_values = f(*args)
-    print('f',f_values)
+    #print('f',f_values)
     x_vector = np.dstack((args))[0]
     N = len(f_values)-1
-    print('the x vector is',*x_vector[-1])
-    print('f(x_vector[-1]) is', f(*x_vector[-1]))
+    #print('the x vector is',*x_vector[-1])
+    #print('f(x_vector[-1]) is', f(*x_vector[-1]))
     
     fractional_old = 0 
     iterations = 0
@@ -199,7 +203,7 @@ def readfile(filename):
 #radius_m11, nhalo_m11 = readfile('satgals_m11.txt')
 #radius_m12, nhalo_m12 = readfile('satgals_m12.txt')
 #radius_m13, nhalo_m13 = readfile('satgals_m13.txt')
-#radius_m14, nhalo_m14 = readfile('satgals_m14.txt')
+radius_m14, nhalo_m14 = readfile('satgals_m14.txt')
 radius_m15, nhalo_m15 = readfile('satgals_m15.txt')
 
 bins = np.logspace(np.log10(0.01),np.log10(5),10)
@@ -208,11 +212,35 @@ a_values = np.linspace(2.4,2.9,100) #try these a,b,c values to find best fit!
 b_values = np.linspace(0.2,0.3,100)
 c_values = np.linspace(1,2,100)
 
-Nsat_m15 = len(radius_m15)/nhalo_m15
-weight = np.full(len(radius_m15),Nsat_m15)
+"""
 
-Nsat_m15_weighted, bin_edges_weighted = np.histogram(radius_m15,bins=bins,\
-                                                     weights=weight)
+Nsat_m11 = len(radius_m11)/nhalo_m11
+weight_m11 = np.full(len(radius_m11),Nsat_m11)
+
+Nsat_m12 = len(radius_m12)/nhalo_m12
+weight_m12 = np.full(len(radius_m12),Nsat_m12)
+
+Nsat_m13 = len(radius_m13)/nhalo_m13
+weight_m13 = np.full(len(radius_m13),Nsat_m13)
+
+print(Nsat_m11,Nsat_m12,Nsat_m13)
+
+"""
+
+Nsat_m14 = len(radius_m14)/nhalo_m14
+weight_m14 = np.full(len(radius_m14),Nsat_m14)
+
+Nsat_m15 = len(radius_m15)/nhalo_m15
+weight_m15 = np.full(len(radius_m15),Nsat_m15)
+
+
+print(Nsat_m14,Nsat_m15)
+
+Nsat_m14_weighted, binedges_weighted_m14 = np.histogram(radius_m14,bins=bins,\
+                                                     weights=weight_m14)
+
+Nsat_m15_weighted, binedges_weighted_m15 = np.histogram(radius_m15,bins=bins,\
+                                                     weights=weight_m15)
 
 def Nmodel(radius_min,radius_max,Nsat,a,b,c):
     """
@@ -238,17 +266,12 @@ def Nmodel(radius_min,radius_max,Nsat,a,b,c):
     
     return N_model
 
-def Nmodel_minimize(a,b,c):
-    return Nmodel(min(radius_m15),max(radius_m15),Nsat_m15,a,b,c)
-
-#print('Nmodel simplex',downhill_simplex(Nmodel_minimize,1e-5,a_values,b_values\
-#                                        ,c_values)) 
-
 def chi2(x,Nsat,a,b,c,bin_edges,Nhist):
     
     N_model = []
     for i in range(len(bin_edges)-1):
         N_model.append(Nmodel(bin_edges[i],bin_edges[i+1],Nsat,a,b,c))
+    
          
     chi2 = ((Nhist[:,None] - N_model)**2)/N_model
     
@@ -259,51 +282,72 @@ def chi2(x,Nsat,a,b,c,bin_edges,Nhist):
         #print('a is list',np.sum(chi2,axis=1))
         return np.sum(chi2,axis=1)
     
-    #return np.sum(chi2,axis=0)
-    
-#print('chi2',chi2(radius_m15,Nsat,a,b,c,bin_edges_weighted,Nsat_m15_weighted))
 
-def chi2_minimize(a,b,c):
-    return chi2(radius_m15,Nsat,a,b,c,bin_edges_weighted,Nsat_m15_weighted)
 
-minimized_params = downhill_simplex(chi2_minimize,1e-6,a_values,b_values,\
+def chi2_minimize_m14(a,b,c):
+    return chi2(radius_m14,Nsat,a,b,c,binedges_weighted_m14,Nsat_m14_weighted)
+
+def chi2_minimize_m15(a,b,c):
+    return chi2(radius_m15,Nsat,a,b,c,binedges_weighted_m15,Nsat_m15_weighted)
+
+
+min_params_m14 = downhill_simplex(chi2_minimize_m14,1e-6,a_values,b_values,\
                                     c_values)
-print(minimized_params)
+    
+min_params_m15 = downhill_simplex(chi2_minimize_m15,1e-6,a_values,b_values,\
+                                    c_values)
+    
+print('the best-fit a,b,c are',min_params_m14)
+print('the best-fit a,b,c are',min_params_m15)
 
 N_model = []
-for i in range(len(bin_edges_weighted)-1):
-    N_model.append(Nmodel(bin_edges_weighted[i],bin_edges_weighted[i+1],\
-                          Nsat_m15,*minimized_params))
-        
-print('model',Nmodel(min(radius_m15),max(radius_m15),Nsat_m15,\
-                              *minimized_params))
-
-print('data binned',Nsat_m15_weighted)
+for i in range(len(binedges_weighted_m15)-1):
+    N_model.append(Nmodel(binedges_weighted_m15[i],binedges_weighted_m15[i+1],\
+                          Nsat_m15,*min_params_m15))
 
 def n_function(x,a,b,c):
     Nsat = Nmodel(min(x),max(x),Nsat_m15,a,b,c)
     return 4*np.pi*(x**2)*n(x,A,Nsat,a,b,c)
 
-fitted_m15 = n_function(radius_m15,*minimized_params)
+fitted_m14 = n_function(radius_m14,*min_params_m14)
 
-init_m15 = n_function(radius_m15,a,b,c)
+init_m14 = n_function(radius_m14,a,b,c)
 
-plt.hist(radius_m15,bins=10,edgecolor='black',density=True)
-plt.scatter(radius_m15,fitted_m15/max(fitted_m15),s=2,zorder=100,color='red')
-plt.scatter(radius_m15,init_m15/max(init_m15),s=2,zorder=100,color='green')
+plt.hist(radius_m14,bins=10,edgecolor='black',density=True,label='data hist')
+plt.scatter(radius_m14,fitted_m14/max(fitted_m14),s=2,zorder=100,color='red',\
+            label='best-fit profile')
 plt.xscale('log')
 plt.yscale('log')
 plt.xlabel('Radii x')
 plt.ylabel('Normalised N(x)')
+plt.legend()
+plt.savefig('./1b_figure4.png')
 plt.show()
+plt.close()
 
-def n_integrand_min(x):
-    Nsat = Nmodel(min(x),max(x),Nsat_m15,*minimized_params)
-    return 4*np.pi*(x**2)*n(x,A,Nsat,*minimized_params)
+fitted_m15 = n_function(radius_m15,*min_params_m15)
 
-print('Nsat is',trapezoid(n_integrand_min,0.01,5,100))
+init_m15 = n_function(radius_m15,a,b,c)
 
-print('chi2 value',np.abs(chi2_minimize(*minimized_params)))
+plt.hist(radius_m15,bins=10,edgecolor='black',density=True,label='data hist')
+plt.scatter(radius_m15,fitted_m15/max(fitted_m15),s=2,zorder=100,color='red',\
+            label='best-fit profile')
+plt.xscale('log')
+plt.yscale('log')
+plt.xlabel('Radii x')
+plt.ylabel('Normalised N(x)')
+plt.legend()
+plt.savefig('./1b_figure5.png')
+plt.show()
+plt.close()
+
+print('chi2 value of m_14',(chi2_minimize_m14(*min_params_m14)))
+
+print('chi2 value of m_15',np.abs(chi2_minimize_m15(*min_params_m15)))
+
+output2 = Nsat_m14,*min_params_m14,np.abs(chi2_minimize_m14(*min_params_m14))
+output3 = Nsat_m15,*min_params_m15,np.abs(chi2_minimize_m15(*min_params_m15))
+np.savetxt('NURhandin3problem1b.txt',[output2,output3],fmt='%f')
 
 #Problem 1c
 
@@ -322,42 +366,39 @@ def gamma_func(n): #simple gamma function implementation, not too accurate
         return x**(n-1)*np.exp(-x)
     return trapezoid(integral,0.01,100,1000)
 
-def log_likelihood_poisson(xdata,y,mu,bin_edges,a,b,c):
+def log_likelihood_poisson(y,Nhalo,bin_edges,a,b,c):
     
     N_model = []
     for i in range(len(bin_edges)-1):
-        N_model.append(Nmodel(bin_edges[i],bin_edges[i+1],Nsat_m15,a,b,c))
+        N_model.append(Nmodel(bin_edges[i],bin_edges[i+1],Nhalo,a,b,c))
         
-    factorial_array = np.zeros(len(xdata))
-    for i in range(len(xdata)):
-        factorial_array[i] = math.gamma(xdata[i]+1)
+    factorial_array = np.zeros(len(y))
+    for i in range(len(y)):
+        factorial_array[i] = math.gamma(y[i]+1)
+    """    
+    model_mean = np.mean(Nmodel)
         
-    log_poisson = y*np.log(mu) - mu - factorial_array
+    if type(Nmodel[0]) == np.float64:
+        print('a is number')
+        log_poisson = y*np.log(N_model[4]) - N_model[4] - factorial_array
+    else:
+        print('a is list')
+        log_poisson = y*np.log(N_model[4]) - N_model[4] - factorial_array
+    """ 
+    log_poisson = y*np.log(N_model[4]) - N_model[4] - factorial_array
     
-    #print(log_poisson)
     
     return -np.sum(log_poisson[:-1])
 
-MLE = log_likelihood_poisson(radius_m15,radius_m15,Nsat_m15,\
-                             bin_edges_weighted,a,b,c)
+MLE = log_likelihood_poisson(radius_m15,Nsat_m15,\
+                             binedges_weighted_m15,a,b,c)
 print('MLE:',MLE)
 
 def LL_poisson_min(a,b,c):
-    return log_likelihood_poisson(radius_m15,radius_m15,Nsat_m15,\
-                                  bin_edges_weighted,a,b,c)
+    return log_likelihood_poisson(radius_m15,Nsat_m15,\
+                                  binedges_weighted_m15,a,b,c)
 
 #print(downhill_simplex(LL_poisson_min,1e-6,a_values,b_values,c_values))
-
-"""
-print(Nsat_m15_weighted)
-print('n weighted',Nsat_m15_weighted)
-print('logaritmic bin edges weighted',bin_edges_weighted)
-
-testing = Nmodel(bin_edges_weighted[0],bin_edges_weighted[1],A,Nsat_m15,a,b,c)
-testing2 = Nmodel(bin_edges_weighted[1],bin_edges_weighted[2],A,Nsat_m15,a,b,c)
-#print('integral value',testing)
-#print('int val',testing2)
-"""
 
 #Problem 1d
 
@@ -367,8 +408,9 @@ def G_test(observed,expected):
     return 2*np.sum(observed*np.log(observed/expected))
 
 def Q(G,M,x):
-    k = len(x) - M #compute the degrees of freedom
-    cdf = gammainc(0.5*k,0.5*x)/math.gamma(0.5*k)
+    k = len(bins) - M #compute the degrees of freedom, 10 bins and 3 params, 
+    cdf = gammainc(0.5*k,1)/math.gamma(0.5*k)
+    return 1-cdf
 
 print(G_test(init_m15,fitted_m15))
 

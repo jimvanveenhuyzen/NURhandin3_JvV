@@ -1,11 +1,58 @@
 \section*{Code of Problem 1}
 
-The code is included below. Like in the previous hand-in, I use code between sub-questions so I found that having one big .py file per problem is the most efficient. The bold text indicates coded functions! 
+The code is included below. Like in the previous hand-in, I use code between sub-questions so I found that having one big .py file per problem is the most efficient.
 
 \lstinputlisting{NURhandin3.py}
 
 \section*{Problem 1a}
 
-blah blah
+In the first problem, we are asked to find the maximum of N(x) within the range x $\in [0,5)$. To solve this, we will use the Golden Ratio minimization algorithm with an integration of the bracketing algorithm. The bracketing algorithm is used to find the initial x-values a,b and c, which are subsequently used in the Golden Ratio algorithm. One important thing to note here is that in the tutorials, these algorithms were used to find the minima of functions, but here we want to find the maximum instead. This means that any signs $<$ in the algorithms that are used in some conditions flip and vice versa. In the output, we can see that the Golden ratio algorithm takes 20 iterations, and finds that the maximum of N(x) is located at $x \approx 0.23$ at a value of $N(0.23) \approx 268$. More significant digits are plotted in the code. 
 
-%\lstinputlisting{NURhandin3problem1.txt}
+\lstinputlisting{NURhandin3problem1a.txt}
+
+\section*{Problem 1b}
+
+In this problem we are supposed to find the best-fit a,b and c parameters using the $\chi^2$ approach. We do this for five seperate files with each of them having different halo mass bins with variable numbers of satellites. For this problem I chose to use 10 logaritmic bins ranging from x = 0.01 (near 0) to xmax = 5, as I felt like it matched the distribution of the radii of the files best. Next, we calculate $<N_{sat}>$ using $<N_{sat}> = N_{sat} / N_{halo}$, so dividing the total number of satellites in the file by the number of halos. Using this, we can use np.histogram to bin the satellite galaxy radii in the aforementioned 10 logaritmic bins, and use $<N_{sat}>$ we just found as weights, to find the mean number of satellites per halo in each radial bin, $N_{data}$.\\
+
+Now, the goal is to compute the $\chi^2$ statistic. Using that the mean and variance for some bin $[x_i,x_{i+1}]$ is given by $\bar{N}_{i} = 4 \pi \int_{x_{i}}^{x_{i+1}} n(x) x^2 dx$, the $\chi^2$ value is given by:
+
+\begin{equation}	
+	\chi^2 = \sum_{i=0}^{N-1} \frac{(N_{data} - \bar{N}_{i})^2}{\bar{N}_{i}}
+\end{equation}
+
+In order to fit the parameters a,b and c to the data, we use the fact that $\bar{N}_{i}$ is dependent on these parameters. We let $\chi^2$(a,b,c) be a function only of these three parameters, the rest of the parameters like $x_data$ are already known/calculated. We use an N-dimensional $\textbf{Downhill Simplex}$ algorithm that uses a range of a,b and c values in order to minimize the value of the $\chi^2$(a,b,c) statistic listed above. Inside this algorithm, I also made a 'simple' N-dimensional selection sort algorithm that is neccessary for the first step of the algorithm.\\
+
+Unfortunately, there seems to be a severe mistake somewhere in the computed in the $\chi^2$-statistic, considering the absolutely ridiculously high (and negative) value. It seems I'm a bit lost on how to apply the $\chi^2$-statistic and finding a minimum. I spend a very long time just getting the code to run, the debugging process was absolutely brutal. I think the problem lies in the different shapes of the arrays used, but I'm not able to solve it. Another hint that the $\chi^2$ is wrong, is the fact that the optimal fit-parameters $a,b,c$ are identical for each data set. I just decided to continue and present the results as they are:
+
+\begin{table}[!h]
+\begin{tabular}{llllll}
+\textbf{} & \textbf{$N_{sat}$} & \textbf{a} & \textbf{b} & \textbf{c} & \textbf{$\chi^{2}$} \\
+\textbf{$m_{11}$} &    0.014       &           &           &           &           \\
+\textbf{$m_{12}$} &     0.25      &           &           &           &           \\
+\textbf{$m_{13}$} &     4.4      &           &           &           &           \\
+\textbf{$m_{14}$} &      29.1     &           &           &           &           \\
+\textbf{$m_{15}$} &       329.5    &           &           &           &          
+\end{tabular}
+\end{table}
+
+We also compare the binned data together with the best-fit profiles in a log-log plot. These are plotted below:
+
+The output of the code is given by:
+
+%\lstinputlisting{NURhandin3problem1b.txt}
+
+\section*{Problem 1c}
+
+Next, we take the maximum likelihood approach using the Poisson distribution. We use that the likelihood $\textbf{L}(\vec{p})$ is given by:
+
+\begin{equation}
+	\textbf{L}(\vec{p}) = \prod_{i=0}^{N-1} \frac{\mu(x_i | \vec{p})^{y_i} e^{-\mu(x_i | \vec{p})}}{y_i!}
+\end{equation}
+
+Here, $y_i$ are the N independent data points and $\mu(x_i | \vec{p})$ = $\bar{N}_i$ are the model counts. Taking the natural log of this equation results in the log-likelihood function:
+
+\begin{equation}
+	- \ln(\textbf{L}(\vec{p})) = - \sum_{i=0}^{N-1} \Big( y_i \ln (\mu(x_i | \vec{p})) - \mu(x_i | \vec{p}) - \ln(y_i!) \Big)
+\end{equation}	
+
+We incorporate the above equation as a function in python. 
